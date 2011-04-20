@@ -23,8 +23,6 @@ Wrong.config[:color] = true
 Wrong.config.alias_assert :expect
 
 module Kernel
-  alias_method :regarding, :describe
-  
   def xdescribe(str)
     puts "x'd out 'describe \"#{str}\"'"
   end
@@ -63,6 +61,15 @@ ActiveRecord::Base.connection.execute(%{
   create table houses(id integer primary key, address varchar(100))
 })
 
+class ActiveRecord::ConnectionAdapters::SQLiteAdapter
+  alias_method :original_execute, :execute
+  
+  def execute(*args)
+    Inspect.record_time("DB.execute"){ original_execute(*args) }
+  end
+end
+
+
 class NQHouse < OpenStruct
   include NotQuiteActiveRecord::BaseMixin
   
@@ -75,6 +82,18 @@ class ARHouse < ActiveRecord::Base
   set_table_name "houses"
 end
 
+CLASS_GROUPS = [["real AR",      {:house => ARHouse}],
+                ["not quite AR", {:house => NQHouse}]]
+
+module Kernel
+  def describe_classes(&block)
+    CLASS_GROUPS.each do |name, classes|
+      describe name do
+        block.call(classes)
+      end
+    end
+  end
+end
 
 
 
