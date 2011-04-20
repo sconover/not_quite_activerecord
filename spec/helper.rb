@@ -65,6 +65,10 @@ ActiveRecord::Base.connection.execute(%{
 
 class NQHouse < OpenStruct
   include NotQuiteActiveRecord::BaseMixin
+  
+  def id
+    @table[:id]
+  end
 end
 
 class ARHouse < ActiveRecord::Base

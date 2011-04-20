@@ -1,0 +1,5 @@
+move the specific classes out of the tests
+
+perf:
+  general way to take the same test, load and time it in nq , ar
+    time to run one simple test (getting at the require, setup overhead)
